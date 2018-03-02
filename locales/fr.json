@@ -14,5 +14,6 @@
 	"Node": "Le site officiel de Node.js",
 	"FondationNode": "Fondation Node.js",
 	"FondationLinux": "Fondation Linux",
-	"DownloadMongodb": "Télécharger mongoDB"
+	"DownloadMongodb": "Télécharger mongoDB",
+	"Prenom": "Prenom"
 }

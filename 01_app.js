@@ -93,7 +93,7 @@ req.body._id = 	ObjectID(req.body._id)
  db.collection('adresse').save(req.body, (err, result) => {
 	 if (err) return console.log(err)
 	 console.log('sauvegarder dans la BD')
-	 res.redirect('/adresse')
+	 res.send(JSON.stringify(req.body))
 	 })
 })
 
@@ -108,7 +108,8 @@ app.get('/detruire/:id', (req, res) => {
  .findOneAndDelete({"_id": ObjectID(req.params.id)}, (err, resultat) => {
 
 if (err) return console.log(err)
- res.redirect('/adresse')  // redirige vers la route qui affiche la collection
+ //res.redirect('/adresse')  // redirige vers la route qui affiche la collection
+res.send(JSON.stringify(id))
  })
 })
 
@@ -139,7 +140,7 @@ app.get('/vider', (req, res) => {
 })
 
 
-////////////////////////////////////////  Route /modifier
+////////////////////////////////////////  Route /ajax_modifier
 app.post('/ajax_modifier', (req, res) => {
 console.log('route /ajax_modifier')
 // console.log('util = ' + util.inspect(req.body));
@@ -149,4 +150,28 @@ req.body._id = 	ObjectID(req.body._id)
 	 console.log('sauvegarder dans la BD')
 	 res.send(JSON.stringify(req.body))
 	 })
+})
+
+
+////////////////////////////////////////  Route /ajax_detruire
+app.post('/ajax_detruire', (req, res) => {
+ console.log('route /ajax_detruire')
+ // console.log('util = ' + util.inspect(req.params));	
+ db.collection('adresse')
+ .findOneAndDelete({"_id": ObjectID(req.body._id)}, (err, resultat) => {
+
+if (err) return console.log(err)
+ res.send(JSON.stringify(resultat))
+ })
+})
+
+////////////////////////////////////////// Route /ajax_ajouter
+app.post('/ajax_ajouter', (req, res) => {
+console.log('route /ajax_ajouter')	
+ db.collection('adresse').save(req.body, (err, result) => {
+ if (err) return console.log(err)
+ // console.log(req.body)	
+ console.log('sauvegarder dans la BD')
+ res.redirect('/adresse')
+ })
 })
