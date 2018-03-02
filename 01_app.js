@@ -81,7 +81,8 @@ console.log('route /ajouter')
  if (err) return console.log(err)
  // console.log(req.body)	
  console.log('sauvegarder dans la BD')
- res.redirect('/adresse')
+ //res.redirect('/adresse')
+ res.send(JSON.stringify(req.body))
  })
 })
 
@@ -109,7 +110,8 @@ app.get('/detruire/:id', (req, res) => {
 
 if (err) return console.log(err)
  //res.redirect('/adresse')  // redirige vers la route qui affiche la collection
-res.send(JSON.stringify(id))
+//res.send(JSON.stringify(id))
+res.send(JSON.stringify(resultat))
  })
 })
 
@@ -172,6 +174,6 @@ console.log('route /ajax_ajouter')
  if (err) return console.log(err)
  // console.log(req.body)	
  console.log('sauvegarder dans la BD')
- res.redirect('/adresse')
+ res.send(JSON.stringify(req.body))
  })
 })

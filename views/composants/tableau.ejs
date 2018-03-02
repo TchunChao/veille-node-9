@@ -15,30 +15,29 @@
 
 
 <table class="tableau">
-    <tr>
-        <th><a href="/trier/_id/<%= objOrdre._id %>">_id<i class="fas fa-<%= (objOrdre._id=='asc'?'sort-up': 'sort-down') %>"></i></a></th>
-        <th><a href="/trier/nom/<%= objOrdre.nom %>"><%=__('Nom') %><i class="fas fa-<%= (objOrdre.nom=='asc'?'sort-up': 'sort-down') %>"></i></a></th>
-        <th><a href="/trier/prenom/<%= objOrdre.prenom %>"><%=__('Prenom') %><i class="fas fa-<%= (objOrdre.prenom=='asc'?'sort-up': 'sort-down') %>"></i></a></th>        
-        <th><a href="/trier/telephone/<%= objOrdre.telephone %>"><%=__('Téléphone') %><i class="fas fa-<%= (objOrdre.telephone=='asc'?'sort-up': 'sort-down') %>"></i></a></th>  
-        <th><a href="/trier/courriel/<%= objOrdre.courriel %>"><%=__('Courriel') %><i class="fas fa-<%= (objOrdre.courriel=='asc'?'sort-up': 'sort-down') %>"></i></a></th>      
-    </tr>
-    
-    <%  for (elm of adresses) {%>
-    <tr>
-        <td><%= elm._id %></td>
-        <td contenteditable='true'><%= elm.nom %></td>
-        <td contenteditable='true'><%= elm.prenom %></td>
-        <td contenteditable='true'><%= elm.telephone %></td>                
-        <td contenteditable='true'><%= elm.courriel %></td>    
-        <td><a class="detruire" href="#"><i class="fas fa-trash-alt" aria-hidden="true"></i></a></td>
-        <td><a class='modifier' href="#"><i class="far fa-save" aria-hidden="true"></i></a></td>
-    </tr>
-    <% } %>
+    <tbody>
+        <tr>
+            <th><a href="/trier/_id/<%= objOrdre._id %>">_id<i class="fas fa-<%= (objOrdre._id=='asc'?'sort-up': 'sort-down') %>"></i></a></th>
+            <th><a href="/trier/nom/<%= objOrdre.nom %>"><%=__('Nom') %><i class="fas fa-<%= (objOrdre.nom=='asc'?'sort-up': 'sort-down') %>"></i></a></th>
+            <th><a href="/trier/prenom/<%= objOrdre.prenom %>"><%=__('Prenom') %><i class="fas fa-<%= (objOrdre.prenom=='asc'?'sort-up': 'sort-down') %>"></i></a></th>        
+            <th><a href="/trier/telephone/<%= objOrdre.telephone %>"><%=__('Téléphone') %><i class="fas fa-<%= (objOrdre.telephone=='asc'?'sort-up': 'sort-down') %>"></i></a></th>  
+            <th><a href="/trier/courriel/<%= objOrdre.courriel %>"><%=__('Courriel') %><i class="fas fa-<%= (objOrdre.courriel=='asc'?'sort-up': 'sort-down') %>"></i></a></th>
+            <th><a href="#" class="ajouter"><i class="fas fa-plus"></i></th>   
+        </tr>
+        
+        <%  for (elm of adresses) {%>
+        <tr>
+            <td><%= elm._id %></td>
+            <td contenteditable='true'><%= elm.nom %></td>
+            <td contenteditable='true'><%= elm.prenom %></td>
+            <td contenteditable='true'><%= elm.telephone %></td>                
+            <td contenteditable='true'><%= elm.courriel %></td>    
+            <td><a class="detruire" href="#"><i class="fas fa-trash-alt" aria-hidden="true"></i></a></td>
+            <td><a class='modifier' href="#"><i class="far fa-save" aria-hidden="true"></i></a></td>
+        </tr>
+        <% } %>
+    </tbody>
 </table>
-
-<button id='testAJAX'>test AJAX</button>
-
-<button id='ajax_ajouter'>AJOUTER</button>
 
 <script type="text/javascript">
     
@@ -104,12 +103,50 @@
                 xhr.addEventListener("readystatechange", traiterRequest, false);   
             })
         }
+
+        let elmAjouter = document.querySelectorAll('.ajouter')
+        let formulaire = document.querySelectorAll('.formulaire')    
+        for (elm of elmAjouter) {
+            elm.addEventListener('click', function() {
+                xhr = new XMLHttpRequest();
+                xhr.open('POST', "/ajax_ajouter", true);
+                    
+                let nom = document.querySelector('#nom')
+                let prenom = document.querySelector('#prenom')
+                let telephone = document.querySelector('#telephone')
+                let courriel = document.querySelector('#courriel')
+                let tableau = document.querySelectorAll('.tableau')
+                console.log(tableau)
+
+                data = {
+                    "nom" : "",
+                    "prenom" : "",
+                    "telephone" : "",
+                    "courriel" : ""
+                }
+                    
+                sData = JSON.stringify(data);
+                xhr.setRequestHeader('Content-type', 'application/json');
+                xhr.send(sData);
+                xhr.addEventListener("readystatechange", function() {
+                    let identifiant = traiterRequest();
+                    if(identifiant != 0) {
+                        let elmTr = document.createElement("TR")
+                        let elmTBody = document.querySelector(".tableau tbody")
+                        let ligne_de_td = '<td >' + identifiant + '</td>' + '<td contenteditable="true"></td>' + '<td contenteditable="true"></td>' + '<td contenteditable="true"></td>' + '<td contenteditable="true"></td>' + '<td><a class="detruire" href="/detruire/<%= elm._id %>"><i class="fas fa-trash-alt" aria-hidden="true"></i></a></td>' + '<td><a class="modifier" href="#"><i class="far fa-save" aria-hidden="true"></i></a></td>'
+                        elmTr.innerHTML = ligne_de_td
+                        elmTBody.appendChild(elmTr)
+                    }
+                }, false);   
+            })
+        }
         
         function traiterRequest(e){
             console.log("xhr.readyState = " + xhr.readyState)
             console.log("xhr.status = " + xhr.status)
+            let id = 0;
 
-            if(xhr.readyState == 4 && xhr.status == 200){
+            if(xhr.readyState == 4 && xhr.status == 200) {
                 console.log('ajax fonctionne')
                 var response = JSON.parse(xhr.responseText);
                 console.log(response)
@@ -117,32 +154,12 @@
                 console.log(xhr.responseText);
 
                 // elmLigne.style.backgroundColor = "#0f0"
+                id = response._id;
             }
+            return id;
         }
 
-        let elmAjouter = document.querySelector('#ajax_ajouter')
-        let formulaire = document.querySelector('formulaire')
-            
-        elmAjouter.addEventListener('click', function() {
-            let nom = document.querySelector('#nom')
-            let prenom = document.querySelector('#prenom')
-            let telephone = document.querySelector('#telephone')
-            let courriel = document.querySelector('#courriel')
-            console.log(document.querySelector('#nom').value)
-            console.log(document.querySelector('#prenom').value)
-            console.log(document.querySelector('#telephone').value)
-            console.log(document.querySelector('#courriel').value)
 
-            data = {
-                "nom" : nom.value,
-                "prenom" : prenom.value,
-                "telephone" : telephone.value,
-                "courriel" : courriel.value
-            }
-
-            sData = JSON.stringify(data);
-            console.log(sData);
-        })
 
 </script>
 
